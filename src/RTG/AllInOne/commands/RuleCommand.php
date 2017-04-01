@@ -46,7 +46,7 @@ class RuleCommand implements CommandExecutor {
                             
                             case "add":
                                 
-                                $rule = array_splice($args, 1);
+                                $rule = trim(implode(" ", array_splice($args, 1)));
                                 
                                 $this->plugin->ruleAdd($rule, $sender);
                                 
@@ -54,7 +54,7 @@ class RuleCommand implements CommandExecutor {
                             
                             case "rm":
                                 
-                                $rule = array_splice($args, 1);
+                                $rule = trim(implode(" ", array_splice($args, 1)));
                                 
                                 $this->plugin->ruleRemove($rule, $sender);
                                 

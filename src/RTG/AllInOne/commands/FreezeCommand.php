@@ -32,9 +32,9 @@ class FreezeCommand implements CommandExecutor {
     public $class;
     public $usage;
 
-    public function __construct(\RTG\AllInOne\Loader $plugin, EventClass $class) {
+    public function __construct(\RTG\AllInOne\Loader $plugin) {
         $this->plugin = $plugin;
-        $this->class = $class;
+        $this->class = new EventClass($plugin);
         $this->usage = "[Usage] /freeze <player>";
     }
     

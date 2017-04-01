@@ -32,6 +32,7 @@ class Loader extends PluginBase {
     
     public $api;
     public $frozen;
+    public $rules;
     
     public function onEnable() {
         
@@ -43,12 +44,14 @@ class Loader extends PluginBase {
         
         @mkdir($this->getDataFolder());
         $this->rules = new Config($this->getDataFolder() . "rules.yml", Config::YAML, array(
-            "rules" => array()
+            "rules" => array(
+                "Do not kick for no reason"
+            )
         ));
         
     }
     
-    public function freezeAdd(string $name, $sender) {
+    public function freezeAdd($name, $sender) {
         
         if (isset($this->frozen[strtolower($name)])) {
             
@@ -64,45 +67,42 @@ class Loader extends PluginBase {
         
     }
     
-    public function ruleAdd(string $rule, $sender) {
+    public function ruleAdd($rule, $sender) {
         
-        $rule = strtolower($rule);
+        $file = $this->rules->get("rules");
         
-        $file = file_get_contents($this->getDataFolder() . "rules.yml");
-        $rf = $file["rules"];
-        
-        if (in_array($rule, $rf)) {
+        if (in_array($rule, $file)) {
             
-            $sender->sendMessage("The rule exists!");
+            $sender->sendMessage("The Rule exists!");
             
         }
         else {
             
-            array_push($rf, $rule);
-            file_put_contents($this->getDataFolder() . "rules.yml", $rf);
-            $sender->sendMessage("added!");
+            array_push($file, $rule);
+            $this->rules->set("rules", $file);
+            $sender->sendMessage("Rule Added!");
+            $this->rules->save();
             
         }
         
     }
     
-    public function ruleRemove(string $rule, $sender) {
+    public function ruleRemove($rule, $sender) {
         
-        $rule = strtolower($rule);
         
-        $file = file_get_contents($this->getDataFolder() . "rules.yml");
-        $rf = $file["rules"];
+        $file = $this->rules->get("rules");
         
-        if (in_array($rule, $rf)) {
+        if (in_array($rule, $file)) {
             
-            unset($rf[array_search($rule, $rf)]);
-            file_put_contents($this->getDataFolder() . "rules.yml", $rf);
-            $sender->sendMessage("Added the rule!");
+            unset($file[array_search($rule, $file)]);
+            $this->rules->set("rules", $file);
+            $sender->sendMessage("Removed the rule!");
+            $this->rules->save();
             
         }
         else {
             
-            $sender->sendMessage("Remove the rule!");
+            $sender->sendMessage("Rule doesn't exist!");
             
         }
         
@@ -110,11 +110,11 @@ class Loader extends PluginBase {
     
     public function onRuleList($sender) {
         
-        $file = file_get_contents($this->getDataFolder() . "rules.yml");
-        $rf = $file["rules"];
+        $file = $this->rules->get("rules");
         
-        foreach ($rf as $list) {
+        foreach ($file as $list) {
             
+            $sender->sendMessage(" -- Rules -- ");
             $sender->sendMessage(" - " . $list);
             
         }
